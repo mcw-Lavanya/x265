@@ -938,7 +938,7 @@ function PFX(costCoeffNxN_neon)
     // x5 - scanFlagMask
     // x6 - baseCtx
     mov             x0, #0
-    movrel          x1, PFX_C(entropyStateBits)
+    movrel_extern   x1, PFX_C(entropyStateBits)
     mov             x4, #0
     mov             x11, #0
     movi            v31.16b, #0

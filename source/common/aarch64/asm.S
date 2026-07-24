@@ -154,6 +154,21 @@ ELF     .size   \name, . - \name
 #endif
 .endm
 
+// Load the address of an externally-visible (potentially preemptible) C symbol.
+// movrel uses adrp+add, producing R_AARCH64_ADR_PREL_PG_HI21 relocations. Those
+// are fine for file-local const tables, but for global C symbols that may bind
+// externally the linker rejects them when building a shared object ("recompile
+// with -fPIC"). In PIC ELF builds such symbols must be reached through the GOT.
+// Non-PIC and non-ELF targets keep the direct movrel behaviour.
+.macro  movrel_extern rd, val
+#if defined(__ELF__) && defined(__PIC__)
+        adrp            \rd, :got:\val
+        ldr             \rd, [\rd, :got_lo12:\val]
+#else
+        movrel          \rd, \val
+#endif
+.endm
+
 #define FENC_STRIDE 64
 #define FDEC_STRIDE 32
 
